@@ -1,0 +1,896 @@
+<title>Cuenta Atrás Marciana</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#F1F0EC;
+    --surface:#FFFFFF;
+    --surface-2:#F7F6F2;
+    --ink:#1B1B1F;
+    --muted:#6B6B72;
+    --accent:#D6412F;
+    --accent-ink:#FFFFFF;
+    --accent-2:#1F6F78;
+    --accent-2-ink:#FFFFFF;
+    --border:#DDDAD2;
+    --shadow:0 1px 2px rgba(27,27,31,.06), 0 6px 16px rgba(27,27,31,.06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121214;
+      --surface:#1B1B1F;
+      --surface-2:#202024;
+      --ink:#EDEDEA;
+      --muted:#9A9A9F;
+      --accent:#FF6A4D;
+      --accent-ink:#1B1B1F;
+      --accent-2:#5FD0DB;
+      --accent-2-ink:#0E2224;
+      --border:#2C2C30;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.4);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121214;
+    --surface:#1B1B1F;
+    --surface-2:#202024;
+    --ink:#EDEDEA;
+    --muted:#9A9A9F;
+    --accent:#FF6A4D;
+    --accent-ink:#1B1B1F;
+    --accent-2:#5FD0DB;
+    --accent-2-ink:#0E2224;
+    --border:#2C2C30;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding-inline:16px;
+    padding-block:28px 60px;
+    line-height:1.5;
+  }
+  .wrap{max-width:720px; margin:0 auto;}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,7vw,40px);
+    margin:6px 0 4px;
+    text-wrap:balance;
+    letter-spacing:-.01em;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:14.5px;
+    margin:0 0 6px;
+    max-width:58ch;
+  }
+  .howto{
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 13px;
+    font-size:13px;
+    margin:14px 0 20px;
+    max-width:60ch;
+  }
+  .howto b{color:var(--accent);}
+
+  /* stats + progress */
+  .stats{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .stat{
+    flex:1 1 140px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    box-shadow:var(--shadow);
+  }
+  .stat .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:22px;
+    font-weight:600;
+  }
+  .stat .label{
+    font-size:11.5px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .stat.scored .num{color:var(--accent);}
+  .stat.allseen .num{color:var(--accent-2);}
+
+  .progress-track{
+    height:6px;
+    background:var(--border);
+    border-radius:99px;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:99px;
+    width:0%;
+    transition:width .35s ease;
+  }
+
+  /* filters */
+  .filters{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .filter-btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:7px 13px;
+    border-radius:99px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .filter-btn:hover{background:var(--surface-2);}
+  .filter-btn.active{
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+  .filter-btn:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+
+  /* cards */
+  .list{display:flex; flex-direction:column; gap:10px; margin-bottom:32px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px 16px 14px;
+    box-shadow:var(--shadow);
+  }
+  .card.dimmed{display:none;}
+  .card-top{
+    display:flex;
+    gap:12px;
+    align-items:baseline;
+  }
+  .rank{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:26px;
+    font-weight:600;
+    color:var(--muted);
+    min-width:2.4ch;
+  }
+  .titleblock{flex:1; min-width:0;}
+  .titleblock h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:17.5px;
+    margin:0;
+    line-height:1.25;
+  }
+  .years{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .blurb{
+    font-size:13.5px;
+    color:var(--muted);
+    margin:8px 0 14px;
+    max-width:64ch;
+  }
+
+  .judges{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:10px;
+  }
+  @media (max-width:480px){
+    .judges{grid-template-columns:1fr;}
+  }
+  .judge{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:9px 10px;
+  }
+  .judge-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:7px;
+  }
+  .judge-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .seen-toggle{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:11.5px;
+    font-weight:500;
+    padding:3px 9px;
+    border-radius:99px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .seen-toggle.on{
+    background:var(--accent-2);
+    color:var(--accent-2-ink);
+    border-color:var(--accent-2);
+  }
+  .slider-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nota-slider{
+    flex:1;
+    accent-color:var(--accent);
+    cursor:pointer;
+  }
+  .nota-slider:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+  }
+  .nota-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:13px;
+    font-weight:600;
+    min-width:2.2ch;
+    text-align:right;
+    color:var(--ink);
+  }
+
+  .card-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .note-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:4px 0;
+  }
+  .note-btn:hover{color:var(--ink);}
+  textarea.note{
+    width:100%;
+    margin-top:10px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    resize:vertical;
+    min-height:56px;
+  }
+  textarea.note[hidden]{display:none;}
+
+  /* ranking table */
+  .table-wrap{overflow-x:auto;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    min-width:520px;
+  }
+  th, td{
+    text-align:left;
+    padding:8px 10px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  th{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+  }
+  th:hover{color:var(--ink);}
+  th.sorted{color:var(--accent);}
+  td.num, th.num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  td.title-cell{
+    font-weight:500;
+    white-space:normal;
+  }
+  tbody tr:nth-child(odd){background:var(--surface-2);}
+  tbody tr.empty td{color:var(--muted); font-style:italic; text-align:center;}
+
+  /* backup panel */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+  }
+  .panel h2{
+    font-family:'Fraunces', serif;
+    font-size:16px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .panel p.hint{
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 14px;
+  }
+  .panel-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .btn:hover{background:var(--border);}
+  .btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+  .btn.danger{color:var(--accent); border-color:var(--accent);}
+  .panel textarea.io{
+    width:100%;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    min-height:70px;
+    resize:vertical;
+  }
+  .save-flag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:6px;
+    min-height:14px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:11.5px;
+    margin-top:26px;
+  }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">La Red Marciana · Repaso NYT</div>
+  <h1>Cuenta atrás marciana</h1>
+  <p class="subtitle">Tanda 1 de 4 — puestos 100 a 76 de "The 100 Best TV Shows of the 21st Century". Jurado: Xevi, Rulo y Remy.</p>
+  <p class="howto">Por cada serie: marcad quién la ha <b>visto</b> y esa persona le pone una <b>nota del 0 al 5</b> — la vuestra, no la del NYT. La tabla de abajo se calcula sola con esas notas.</p>
+
+  <div class="stats">
+    <div class="stat scored"><div class="num" id="statScored">0/25</div><div class="label">Con alguna nota</div></div>
+    <div class="stat allseen"><div class="num" id="statAllSeen">0/25</div><div class="label">Vista por los 3</div></div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Todas (25)</button>
+    <button class="filter-btn" data-filter="scored">Con nota</button>
+    <button class="filter-btn" data-filter="pending">Nadie la ha visto</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <div class="panel">
+    <h2>Tabla final</h2>
+    <p class="hint">Se calcula sola. Toca una columna para ordenar.</p>
+    <div class="table-wrap">
+      <table id="rankTable">
+        <thead>
+          <tr>
+            <th class="num" data-key="rank">#</th>
+            <th data-key="title">Serie</th>
+            <th class="num" data-key="seen">Vistas</th>
+            <th class="num" data-key="xevi">Xevi</th>
+            <th class="num" data-key="rulo">Rulo</th>
+            <th class="num" data-key="remy">Remy</th>
+            <th class="num" data-key="media">Media</th>
+          </tr>
+        </thead>
+        <tbody id="rankBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Copia de seguridad</h2>
+    <p class="hint">Todo se guarda solo en este navegador. Si grabáis desde otro ordenador, copiad el resumen aquí y pegadlo allí.</p>
+    <div class="panel-row">
+      <button class="btn primary" id="btnCopy">Copiar resumen</button>
+      <button class="btn" id="btnShowPaste">Pegar copia de seguridad</button>
+      <button class="btn danger" id="btnClear">Borrar todo</button>
+    </div>
+    <textarea class="io" id="ioBox" hidden></textarea>
+    <div class="panel-row" id="pasteRow" hidden>
+      <button class="btn primary" id="btnLoad">Cargar lo pegado</button>
+    </div>
+    <div class="save-flag" id="saveFlag"></div>
+  </div>
+
+  <footer>Tanda 1 de 4 · Se guarda solo en este navegador, no hay servidor.</footer>
+</div>
+
+<script>
+(function(){
+  var DATA = [
+    {n:100, t:"Scandal", y:"2012-2018", b:"Shonda Rhimes, ABC. Kerry Washington gestiona crisis de políticos y famosos en Washington. Gancho: la serie de Rhimes que aparece más abajo de lo esperado."},
+    {n:99, t:"Gilmore Girls", y:"2000-2007", b:"Amy Sherman-Palladino, The WB/CW. Madre e hija a toda velocidad de diálogo en Stars Hollow. Gancho: ¿quién la ve por gusto y quién por herencia familiar?"},
+    {n:98, t:"The OA", y:"2016-2019", b:"Brit Marling y Zal Batmanglij, Netflix. Una mujer ciega reaparece con la vista recuperada, cada vez más rara. Cancelada con la trama abierta. Gancho: el baile final que todo el mundo recuerda."},
+    {n:97, t:"Community", y:"2009-2015", b:"Dan Harmon, NBC/Yahoo Screen. Grupo de estudio en un community college, episodios muy conceptuales. Gancho: \"seis temporadas y una película\" como lema de culto."},
+    {n:96, t:"Halt and Catch Fire", y:"2014-2017", b:"Cantwell y Rogers, AMC. Texas, primeros 80: gente clonando ordenadores hasta llegar a internet. Gancho: empieza como un Mad Men con ordenadores y acaba siendo otra cosa."},
+    {n:95, t:"House", y:"2004-2012", b:"David Shore, Fox. Hugh Laurie, diagnosticador borde inspirado en Sherlock Holmes. Gancho: de las series más vistas del mundo, aquí en el puesto 95."},
+    {n:94, t:"The Diplomat", y:"2023-act.", b:"Debora Cahn, Netflix. Keri Russell, embajadora de EE. UU. en Londres a la fuerza. Sigue en emisión. Gancho: thriller político con humor y diálogos rápidos."},
+    {n:93, t:"Station Eleven", y:"2021-2022", b:"Patrick Somerville, HBO Max. Miniserie: una compañía de teatro itinerante veinte años después de una pandemia. Gancho: se estrenó en plena covid."},
+    {n:92, t:"The Night Of", y:"2016", b:"Price y Zaillian, HBO. Un estudiante acusado de un asesinato que no recuerda. Gancho: John Turturro heredó el papel de James Gandolfini."},
+    {n:91, t:"Catastrophe", y:"2015-2019", b:"Delaney y Horgan, Channel 4/Amazon. Un lío de una semana en Londres que acaba en boda. Gancho: pareja que se lleva bien y sigue siendo graciosa."},
+    {n:90, t:"Eastbound & Down", y:"2009-2013", b:"McBride, Hill y Best, HBO. Un exlanzador de béisbol vuelve a su pueblo sin aprender nada. Gancho: la escuela del humor de Danny McBride."},
+    {n:89, t:"Baby Reindeer", y:"2024", b:"Richard Gadd, Netflix. Miniserie sobre un acoso real que acabó en escándalo. Gancho: viral, denuncia y siete episodios."},
+    {n:88, t:"Dexter", y:"2006-2013", b:"James Manos Jr., Showtime. Forense que mata asesinos de noche. Gancho: buena hasta la cuarta, luego un final muy discutido."},
+    {n:87, t:"Reservation Dogs", y:"2021-2023", b:"Harjo y Waititi, FX/Hulu. Cuatro adolescentes indígenas en Oklahoma sueñan con California. Gancho: acabó en el momento justo."},
+    {n:86, t:"Shōgun", y:"2024-act.", b:"Kondo y Marks, FX/Hulu. Japón, 1600: un marinero inglés naufraga en plena lucha de poder. 18 Emmys en 2024. Gancho: en japonés, con subtítulos, en cadena estadounidense."},
+    {n:85, t:"The Great British Baking Show", y:"2010-act.", b:"BBC/Channel 4. Concursantes aficionados y una carpa en un jardín. Gancho: reality de competición sin gente mala."},
+    {n:84, t:"Planet Earth", y:"2006", b:"BBC, narración de Attenborough. Naturaleza en alta definición tras años de rodaje. Gancho: el único guion que escribe la naturaleza."},
+    {n:83, t:"Justified", y:"2010-2015", b:"Graham Yost, FX. Basada en Elmore Leonard. Un alguacil con sombrero de vaquero vuelve a su Kentucky natal. Gancho: western moderno que casi nunca sale en los top."},
+    {n:82, t:"Better Things", y:"2016-2022", b:"Pamela Adlon, FX. Una actriz madre soltera de tres hijas en Los Ángeles. Gancho: sobrevivió a la salida de su cocreador."},
+    {n:81, t:"The Queen's Gambit", y:"2020", b:"Scott Frank, Netflix. Una huérfana prodigio del ajedrez en los años 50-60. Gancho: hizo subir las ventas de tableros de verdad."},
+    {n:80, t:"How To with John Wilson", y:"2020-2023", b:"HBO. Un neoyorquino sale a explicar cosas cotidianas y acaba en otra parte. Gancho: cuesta describirla, ideal para un podcast."},
+    {n:79, t:"The Good Wife", y:"2009-2016", b:"Robert y Michelle King, CBS. Una abogada vuelve a trabajar tras el escándalo político de su marido. Gancho: procedimental de cadena generalista en un top de plataformas."},
+    {n:78, t:"It's Always Sunny in Philadelphia", y:"2005-act.", b:"FX/FXX. Cinco amigos horribles regentan un bar. Gancho: la comedia de imagen real más larga de EE. UU."},
+    {n:77, t:"Modern Family", y:"2009-2020", b:"Lloyd y Levitan, ABC. Tres familias emparentadas en falso documental. Gancho: ganó cinco Emmys seguidos y hoy casi nadie la cita como favorita."},
+    {n:76, t:"Somebody Somewhere", y:"2022-2024", b:"Bos y Thureen, HBO. Bridget Everett vuelve a Kansas tras la muerte de su hermana y encuentra un coro de amigos raros. Gancho: pequeña, cuidada, cierra la tanda."}
+  ];
+
+  var JUDGES = [
+    {key:'xevi', label:'Xevi'},
+    {key:'rulo', label:'Rulo'},
+    {key:'remy', label:'Remy'}
+  ];
+
+  var STORE_KEY = "rm-nyt-tanda1-v2";
+  var state = {votes:{}, notes:{}};
+
+  function emptyVote(){
+    var v = {};
+    JUDGES.forEach(function(j){ v[j.key] = {seen:false, nota:0}; });
+    return v;
+  }
+
+  DATA.forEach(function(d){ state.votes[d.n] = emptyVote(); });
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.votes){
+          DATA.forEach(function(d){
+            var saved = parsed.votes[d.n];
+            if(saved){
+              JUDGES.forEach(function(j){
+                if(saved[j.key]){
+                  state.votes[d.n][j.key].seen = !!saved[j.key].seen;
+                  state.votes[d.n][j.key].nota = Number(saved[j.key].nota) || 0;
+                }
+              });
+            }
+          });
+          state.notes = parsed.notes || {};
+        }
+      }
+    }catch(e){ /* private mode or blocked storage: keep defaults */ }
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      flagSave("Guardado " + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}));
+    }catch(e){
+      flagSave("No se pudo guardar en este navegador");
+    }
+  }
+
+  var saveFlagEl = document.getElementById('saveFlag');
+  var saveFlagTimer;
+  function flagSave(msg){
+    saveFlagEl.textContent = msg;
+    clearTimeout(saveFlagTimer);
+    saveFlagTimer = setTimeout(function(){ saveFlagEl.textContent = ""; }, 2200);
+  }
+
+  var listEl = document.getElementById('list');
+
+  DATA.forEach(function(item){
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.n = item.n;
+
+    var judgesHtml = JUDGES.map(function(j){
+      return (
+        '<div class="judge" data-judge="' + j.key + '">' +
+          '<div class="judge-head">' +
+            '<span class="judge-name">' + j.label + '</span>' +
+            '<button class="seen-toggle" type="button">Vista</button>' +
+          '</div>' +
+          '<div class="slider-row">' +
+            '<input type="range" class="nota-slider" min="0" max="5" step="0.5" value="0" disabled>' +
+            '<span class="nota-value">–</span>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<div class="rank">' + item.n + '</div>' +
+        '<div class="titleblock">' +
+          '<h3>' + item.t + '</h3>' +
+          '<span class="years">' + item.y + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<p class="blurb">' + item.b + '</p>' +
+      '<div class="judges">' + judgesHtml + '</div>' +
+      '<div class="card-actions">' +
+        '<button class="note-btn" type="button">+ nota</button>' +
+      '</div>' +
+      '<textarea class="note" placeholder="Nota para el programa…" hidden></textarea>';
+
+    listEl.appendChild(card);
+
+    JUDGES.forEach(function(j){
+      var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
+      var seenBtn = judgeBlock.querySelector('.seen-toggle');
+      var slider = judgeBlock.querySelector('.nota-slider');
+      var valueEl = judgeBlock.querySelector('.nota-value');
+
+      seenBtn.addEventListener('click', function(){
+        var v = state.votes[item.n][j.key];
+        v.seen = !v.seen;
+        if(!v.seen){ v.nota = 0; }
+        refreshJudgeBlock(judgeBlock, v);
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+        saveState();
+      });
+
+      slider.addEventListener('input', function(){
+        state.votes[item.n][j.key].nota = Number(slider.value);
+        valueEl.textContent = Number(slider.value).toFixed(1);
+      });
+      slider.addEventListener('change', function(){
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+        saveState();
+      });
+    });
+
+    var noteBtn = card.querySelector('.note-btn');
+    var noteArea = card.querySelector('.note');
+    noteBtn.addEventListener('click', function(){
+      var willShow = noteArea.hidden;
+      noteArea.hidden = !willShow;
+      noteBtn.textContent = willShow ? '– nota' : '+ nota';
+      if(willShow) noteArea.focus();
+    });
+    noteArea.addEventListener('input', function(){
+      state.notes[item.n] = noteArea.value;
+      saveState();
+    });
+  });
+
+  function refreshJudgeBlock(judgeBlock, v){
+    var seenBtn = judgeBlock.querySelector('.seen-toggle');
+    var slider = judgeBlock.querySelector('.nota-slider');
+    var valueEl = judgeBlock.querySelector('.nota-value');
+    seenBtn.classList.toggle('on', v.seen);
+    slider.disabled = !v.seen;
+    slider.value = v.nota;
+    valueEl.textContent = v.seen ? Number(v.nota).toFixed(1) : '–';
+  }
+
+  function refreshAllCards(){
+    var cards = listEl.querySelectorAll('.card');
+    cards.forEach(function(card){
+      var n = card.dataset.n;
+      JUDGES.forEach(function(j){
+        var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
+        refreshJudgeBlock(judgeBlock, state.votes[n][j.key]);
+      });
+      var noteArea = card.querySelector('.note');
+      var noteBtn = card.querySelector('.note-btn');
+      var val = state.notes[n] || '';
+      noteArea.value = val;
+      if(val){
+        noteArea.hidden = false;
+        noteBtn.textContent = '– nota';
+      } else {
+        noteArea.hidden = true;
+        noteBtn.textContent = '+ nota';
+      }
+    });
+  }
+
+  var statScored = document.getElementById('statScored');
+  var statAllSeen = document.getElementById('statAllSeen');
+  var progressFill = document.getElementById('progressFill');
+
+  function itemStats(n){
+    var v = state.votes[n];
+    var seenCount = 0, notaSum = 0, notaCount = 0;
+    JUDGES.forEach(function(j){
+      if(v[j.key].seen){
+        seenCount++;
+        notaSum += v[j.key].nota;
+        notaCount++;
+      }
+    });
+    return {
+      seenCount: seenCount,
+      hasScore: notaCount > 0,
+      media: notaCount > 0 ? (notaSum / notaCount) : null
+    };
+  }
+
+  function refreshHeader(){
+    var total = DATA.length;
+    var scored = 0, allSeen = 0;
+    DATA.forEach(function(d){
+      var s = itemStats(d.n);
+      if(s.hasScore) scored++;
+      if(s.seenCount === JUDGES.length) allSeen++;
+    });
+    statScored.textContent = scored + '/' + total;
+    statAllSeen.textContent = allSeen + '/' + total;
+    progressFill.style.width = Math.round((scored/total)*100) + '%';
+  }
+
+  var currentFilter = 'all';
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  function applyFilter(){
+    var cards = listEl.querySelectorAll('.card');
+    cards.forEach(function(card){
+      var n = Number(card.dataset.n);
+      var s = itemStats(n);
+      var show = true;
+      if(currentFilter === 'scored') show = s.hasScore;
+      else if(currentFilter === 'pending') show = s.seenCount === 0;
+      card.classList.toggle('dimmed', !show);
+    });
+  }
+
+  // ranking table
+  var rankBody = document.getElementById('rankBody');
+  var sortKey = 'media';
+  var sortDir = -1; // desc
+  var headers = document.querySelectorAll('#rankTable th');
+  headers.forEach(function(th){
+    th.addEventListener('click', function(){
+      var key = th.dataset.key;
+      if(sortKey === key){ sortDir *= -1; }
+      else { sortKey = key; sortDir = (key === 'title') ? 1 : -1; }
+      renderRanking();
+    });
+  });
+
+  function renderRanking(){
+    var rows = DATA.map(function(d){
+      var v = state.votes[d.n];
+      var s = itemStats(d.n);
+      return {
+        n: d.n,
+        title: d.t,
+        seen: s.seenCount,
+        xevi: v.xevi.seen ? v.xevi.nota : null,
+        rulo: v.rulo.seen ? v.rulo.nota : null,
+        remy: v.remy.seen ? v.remy.nota : null,
+        media: s.media
+      };
+    });
+
+    rows.sort(function(a,b){
+      var av = a[sortKey], bv = b[sortKey];
+      if(sortKey === 'title'){
+        return sortDir * av.localeCompare(bv);
+      }
+      var an = (av === null || av === undefined) ? -1 : av;
+      var bn = (bv === null || bv === undefined) ? -1 : bv;
+      return sortDir * (an - bn);
+    });
+
+    headers.forEach(function(th){ th.classList.toggle('sorted', th.dataset.key === sortKey); });
+
+    rankBody.innerHTML = '';
+    var withScore = rows.filter(function(r){ return r.media !== null; });
+    if(withScore.length === 0){
+      var tr = document.createElement('tr');
+      tr.className = 'empty';
+      tr.innerHTML = '<td colspan="7">Aún no hay ninguna nota puesta.</td>';
+      rankBody.appendChild(tr);
+      return;
+    }
+
+    rows.forEach(function(r, i){
+      var tr = document.createElement('tr');
+      var fmt = function(v){ return v === null || v === undefined ? '—' : v.toFixed(1); };
+      tr.innerHTML =
+        '<td class="num">' + (i+1) + '</td>' +
+        '<td class="title-cell">' + r.title + '</td>' +
+        '<td class="num">' + r.seen + '/3</td>' +
+        '<td class="num">' + fmt(r.xevi) + '</td>' +
+        '<td class="num">' + fmt(r.rulo) + '</td>' +
+        '<td class="num">' + fmt(r.remy) + '</td>' +
+        '<td class="num">' + fmt(r.media) + '</td>';
+      rankBody.appendChild(tr);
+    });
+  }
+
+  // backup panel
+  var ioBox = document.getElementById('ioBox');
+  var pasteRow = document.getElementById('pasteRow');
+  var btnCopy = document.getElementById('btnCopy');
+  var btnShowPaste = document.getElementById('btnShowPaste');
+  var btnLoad = document.getElementById('btnLoad');
+  var btnClear = document.getElementById('btnClear');
+
+  btnCopy.addEventListener('click', function(){
+    var payload = JSON.stringify({tanda:1, rango:'100-76', state:state}, null, 0);
+    ioBox.hidden = false;
+    ioBox.value = payload;
+    pasteRow.hidden = true;
+    ioBox.focus();
+    ioBox.select();
+    var done = function(){ flagSave('Resumen copiado'); };
+    var fail = function(){
+      flagSave('No se pudo copiar solo: seleccionado, usa Ctrl/Cmd+C');
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(payload).then(done).catch(fail);
+    } else {
+      fail();
+    }
+  });
+
+  btnShowPaste.addEventListener('click', function(){
+    ioBox.hidden = false;
+    ioBox.value = '';
+    ioBox.placeholder = 'Pega aquí el resumen copiado en otro navegador…';
+    pasteRow.hidden = false;
+    ioBox.focus();
+  });
+
+  btnLoad.addEventListener('click', function(){
+    try{
+      var parsed = JSON.parse(ioBox.value);
+      var loaded = parsed && parsed.state ? parsed.state : parsed;
+      if(!loaded || typeof loaded !== 'object') throw new Error('formato');
+      DATA.forEach(function(d){
+        var saved = loaded.votes && loaded.votes[d.n];
+        var v = emptyVote();
+        if(saved){
+          JUDGES.forEach(function(j){
+            if(saved[j.key]){
+              v[j.key].seen = !!saved[j.key].seen;
+              v[j.key].nota = Number(saved[j.key].nota) || 0;
+            }
+          });
+        }
+        state.votes[d.n] = v;
+      });
+      state.notes = loaded.notes || {};
+      refreshAllCards();
+      refreshHeader();
+      applyFilter();
+      renderRanking();
+      saveState();
+      flagSave('Copia cargada');
+      pasteRow.hidden = true;
+    }catch(e){
+      flagSave('Ese texto no es una copia válida');
+    }
+  });
+
+  var clearArmed = false;
+  var clearTimer;
+  btnClear.addEventListener('click', function(){
+    if(!clearArmed){
+      clearArmed = true;
+      btnClear.textContent = 'Confirmar borrado';
+      clearTimer = setTimeout(function(){
+        clearArmed = false;
+        btnClear.textContent = 'Borrar todo';
+      }, 3000);
+      return;
+    }
+    clearTimeout(clearTimer);
+    clearArmed = false;
+    btnClear.textContent = 'Borrar todo';
+    DATA.forEach(function(d){ state.votes[d.n] = emptyVote(); });
+    state.notes = {};
+    refreshAllCards();
+    refreshHeader();
+    applyFilter();
+    renderRanking();
+    saveState();
+    flagSave('Todo borrado');
+  });
+
+  loadState();
+  refreshAllCards();
+  refreshHeader();
+  applyFilter();
+  renderRanking();
+})();
+</script>
