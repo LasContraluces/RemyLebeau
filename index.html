@@ -485,6 +485,7 @@
             <th class="num" data-key="rulo">Rulo</th>
             <th class="num" data-key="remy">Remy</th>
             <th class="num" data-key="media">Media</th>
+            <th class="num" data-key="imdb">IMDb</th>
           </tr>
         </thead>
         <tbody id="rankBody"></tbody>
@@ -853,7 +854,8 @@
         xevi: v.xevi.seen ? v.xevi.nota : null,
         rulo: v.rulo.seen ? v.rulo.nota : null,
         remy: v.remy.seen ? v.remy.nota : null,
-        media: s.media
+        media: s.media,
+        imdb: d.imdb
       };
     });
 
@@ -874,7 +876,7 @@
     if(withScore.length === 0){
       var tr = document.createElement('tr');
       tr.className = 'empty';
-      tr.innerHTML = '<td colspan="7">Aún no hay ninguna nota puesta.</td>';
+      tr.innerHTML = '<td colspan="8">Aún no hay ninguna nota puesta.</td>';
       rankBody.appendChild(tr);
       return;
     }
@@ -889,7 +891,8 @@
         '<td class="num">' + fmt(r.xevi) + '</td>' +
         '<td class="num">' + fmt(r.rulo) + '</td>' +
         '<td class="num">' + fmt(r.remy) + '</td>' +
-        '<td class="num">' + fmt(r.media) + '</td>';
+        '<td class="num">' + fmt(r.media) + '</td>' +
+        '<td class="num">' + r.imdb.toFixed(1) + '</td>';
       rankBody.appendChild(tr);
     });
   }
