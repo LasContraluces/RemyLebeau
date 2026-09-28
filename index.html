@@ -172,11 +172,45 @@
     font-size:12px;
     color:var(--muted);
   }
+  .meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--accent-2);
+    margin:6px 0 0;
+  }
   .blurb{
     font-size:13.5px;
     color:var(--muted);
-    margin:8px 0 14px;
+    margin:6px 0 14px;
     max-width:64ch;
+  }
+
+  /* summary panel */
+  .summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:6px;
+  }
+  @media (max-width:480px){
+    .summary-grid{grid-template-columns:1fr 1fr;}
+  }
+  .summary-tile .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:20px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .summary-tile .label{
+    font-size:11.5px;
+    color:var(--muted);
+  }
+  .summary-note{
+    font-size:13px;
+    color:var(--muted);
+    margin:12px 0 0;
+    max-width:60ch;
   }
 
   .judges{
@@ -402,6 +436,19 @@
     <button class="filter-btn" data-filter="pending">Nadie la ha visto</button>
   </div>
 
+  <div class="panel">
+    <h2>Resumen de la tanda</h2>
+    <div class="summary-grid">
+      <div class="summary-tile"><div class="num">2000–2024</div><div class="label">Años de estreno</div></div>
+      <div class="summary-tile"><div class="num">6 de FX</div><div class="label">Cadena más repetida</div></div>
+      <div class="summary-tile"><div class="num">4</div><div class="label">Miniseries</div></div>
+      <div class="summary-tile"><div class="num">4</div><div class="label">Aún en emisión</div></div>
+      <div class="summary-tile"><div class="num">5</div><div class="label">De HBO</div></div>
+      <div class="summary-tile"><div class="num">4</div><div class="label">De Netflix</div></div>
+    </div>
+    <p class="summary-note">FX es la casa más presente en esta tanda (Halt and Catch Fire, Justified, Better Things, Reservation Dogs, Shōgun, It's Always Sunny), por delante de HBO. En emisión o con temporada pendiente: The Diplomat, Shōgun, It's Always Sunny y The Great British Baking Show — comprobad su estado antes de grabar. Miniseries de la tanda: Station Eleven, The Night Of, Baby Reindeer y The Queen's Gambit.</p>
+  </div>
+
   <div class="list" id="list"></div>
 
   <div class="panel">
@@ -446,31 +493,31 @@
 <script>
 (function(){
   var DATA = [
-    {n:100, t:"Scandal", y:"2012-2018", b:"Shonda Rhimes, ABC. Kerry Washington gestiona crisis de políticos y famosos en Washington. Gancho: la serie de Rhimes que aparece más abajo de lo esperado."},
-    {n:99, t:"Gilmore Girls", y:"2000-2007", b:"Amy Sherman-Palladino, The WB/CW. Madre e hija a toda velocidad de diálogo en Stars Hollow. Gancho: ¿quién la ve por gusto y quién por herencia familiar?"},
-    {n:98, t:"The OA", y:"2016-2019", b:"Brit Marling y Zal Batmanglij, Netflix. Una mujer ciega reaparece con la vista recuperada, cada vez más rara. Cancelada con la trama abierta. Gancho: el baile final que todo el mundo recuerda."},
-    {n:97, t:"Community", y:"2009-2015", b:"Dan Harmon, NBC/Yahoo Screen. Grupo de estudio en un community college, episodios muy conceptuales. Gancho: \"seis temporadas y una película\" como lema de culto."},
-    {n:96, t:"Halt and Catch Fire", y:"2014-2017", b:"Cantwell y Rogers, AMC. Texas, primeros 80: gente clonando ordenadores hasta llegar a internet. Gancho: empieza como un Mad Men con ordenadores y acaba siendo otra cosa."},
-    {n:95, t:"House", y:"2004-2012", b:"David Shore, Fox. Hugh Laurie, diagnosticador borde inspirado en Sherlock Holmes. Gancho: de las series más vistas del mundo, aquí en el puesto 95."},
-    {n:94, t:"The Diplomat", y:"2023-act.", b:"Debora Cahn, Netflix. Keri Russell, embajadora de EE. UU. en Londres a la fuerza. Sigue en emisión. Gancho: thriller político con humor y diálogos rápidos."},
-    {n:93, t:"Station Eleven", y:"2021-2022", b:"Patrick Somerville, HBO Max. Miniserie: una compañía de teatro itinerante veinte años después de una pandemia. Gancho: se estrenó en plena covid."},
-    {n:92, t:"The Night Of", y:"2016", b:"Price y Zaillian, HBO. Un estudiante acusado de un asesinato que no recuerda. Gancho: John Turturro heredó el papel de James Gandolfini."},
-    {n:91, t:"Catastrophe", y:"2015-2019", b:"Delaney y Horgan, Channel 4/Amazon. Un lío de una semana en Londres que acaba en boda. Gancho: pareja que se lleva bien y sigue siendo graciosa."},
-    {n:90, t:"Eastbound & Down", y:"2009-2013", b:"McBride, Hill y Best, HBO. Un exlanzador de béisbol vuelve a su pueblo sin aprender nada. Gancho: la escuela del humor de Danny McBride."},
-    {n:89, t:"Baby Reindeer", y:"2024", b:"Richard Gadd, Netflix. Miniserie sobre un acoso real que acabó en escándalo. Gancho: viral, denuncia y siete episodios."},
-    {n:88, t:"Dexter", y:"2006-2013", b:"James Manos Jr., Showtime. Forense que mata asesinos de noche. Gancho: buena hasta la cuarta, luego un final muy discutido."},
-    {n:87, t:"Reservation Dogs", y:"2021-2023", b:"Harjo y Waititi, FX/Hulu. Cuatro adolescentes indígenas en Oklahoma sueñan con California. Gancho: acabó en el momento justo."},
-    {n:86, t:"Shōgun", y:"2024-act.", b:"Kondo y Marks, FX/Hulu. Japón, 1600: un marinero inglés naufraga en plena lucha de poder. 18 Emmys en 2024. Gancho: en japonés, con subtítulos, en cadena estadounidense."},
-    {n:85, t:"The Great British Baking Show", y:"2010-act.", b:"BBC/Channel 4. Concursantes aficionados y una carpa en un jardín. Gancho: reality de competición sin gente mala."},
-    {n:84, t:"Planet Earth", y:"2006", b:"BBC, narración de Attenborough. Naturaleza en alta definición tras años de rodaje. Gancho: el único guion que escribe la naturaleza."},
-    {n:83, t:"Justified", y:"2010-2015", b:"Graham Yost, FX. Basada en Elmore Leonard. Un alguacil con sombrero de vaquero vuelve a su Kentucky natal. Gancho: western moderno que casi nunca sale en los top."},
-    {n:82, t:"Better Things", y:"2016-2022", b:"Pamela Adlon, FX. Una actriz madre soltera de tres hijas en Los Ángeles. Gancho: sobrevivió a la salida de su cocreador."},
-    {n:81, t:"The Queen's Gambit", y:"2020", b:"Scott Frank, Netflix. Una huérfana prodigio del ajedrez en los años 50-60. Gancho: hizo subir las ventas de tableros de verdad."},
-    {n:80, t:"How To with John Wilson", y:"2020-2023", b:"HBO. Un neoyorquino sale a explicar cosas cotidianas y acaba en otra parte. Gancho: cuesta describirla, ideal para un podcast."},
-    {n:79, t:"The Good Wife", y:"2009-2016", b:"Robert y Michelle King, CBS. Una abogada vuelve a trabajar tras el escándalo político de su marido. Gancho: procedimental de cadena generalista en un top de plataformas."},
-    {n:78, t:"It's Always Sunny in Philadelphia", y:"2005-act.", b:"FX/FXX. Cinco amigos horribles regentan un bar. Gancho: la comedia de imagen real más larga de EE. UU."},
-    {n:77, t:"Modern Family", y:"2009-2020", b:"Lloyd y Levitan, ABC. Tres familias emparentadas en falso documental. Gancho: ganó cinco Emmys seguidos y hoy casi nadie la cita como favorita."},
-    {n:76, t:"Somebody Somewhere", y:"2022-2024", b:"Bos y Thureen, HBO. Bridget Everett vuelve a Kansas tras la muerte de su hermana y encuentra un coro de amigos raros. Gancho: pequeña, cuidada, cierra la tanda."}
+    {n:100, t:"Scandal", y:"2012-2018", ch:"Shonda Rhimes · ABC · 7 temp., 124 ep.", b:"Kerry Washington es Olivia Pope, una gestora de crisis de Washington que arregla los desastres de políticos y famosos, inspirada en el trabajo real de Judy Smith. Gancho: una serie de Rhimes en un puesto tan bajo del top da para discutir qué mide exactamente esta lista."},
+    {n:99, t:"Gilmore Girls", y:"2000-2007", ch:"Amy Sherman-Palladino · The WB/CW · 7 temp., 153 ep.", b:"Lorelai y Rory Gilmore, madre e hija, en el pueblo de Stars Hollow. Sherman-Palladino se fue tras la sexta temporada y la séptima se nota. En 2016 hubo continuación en Netflix (A Year in the Life, cuatro episodios largos). Gancho: diálogos a toda velocidad y la pregunta de quién la ve por gusto y quién por herencia familiar."},
+    {n:98, t:"The OA", y:"2016-2019", ch:"Brit Marling y Zal Batmanglij · Netflix · 2 temp., 16 ep.", b:"Una mujer ciega reaparece años después de desaparecer, ahora con la vista recuperada, y cuenta una historia sobre experiencias cercanas a la muerte cada vez más rara. Netflix la canceló con la trama abierta. Gancho: la serie cancelada con fans militantes, con el baile del final incluido."},
+    {n:97, t:"Community", y:"2009-2015", ch:"Dan Harmon · NBC/Yahoo Screen · 110 ep.", b:"Un grupo de estudio en un community college de Colorado. Harmon fue apartado tras la tercera temporada y volvió para la quinta; Chevy Chase se marchó en la cuarta. Muy de episodios temáticos (paintball, stop-motion, rol en la cafetería). Gancho: \"seis temporadas y una película\" como broma que se convirtió en lema, y tiene episodios de juegos de mesa."},
+    {n:96, t:"Halt and Catch Fire", y:"2014-2017", ch:"Cantwell y Rogers · AMC · 4 temp., 40 ep.", b:"Empieza en Texas en los primeros 80, con gente clonando ordenadores personales, y termina a mitad de los 90 con internet ya en marcha. Audiencias bajas, recorrido de crítica enorme. Gancho: empieza pareciendo una copia de Mad Men con ordenadores y acaba siendo otra cosa."},
+    {n:95, t:"House", y:"2004-2012", ch:"David Shore · Fox · 8 temp., 177 ep.", b:"Hugh Laurie como el doctor Gregory House, diagnosticador borde y adicto a la Vicodina, con estructura de caso médico semanal. Claramente basado en Sherlock Holmes (Wilson es Watson, apartamento 221B). Gancho: de las series más vistas del mundo en su época, aquí en el puesto 95."},
+    {n:94, t:"The Diplomat", y:"2023-act.", ch:"Debora Cahn (El Ala Oeste) · Netflix", b:"Keri Russell es Kate Wyler, diplomática de carrera que acaba de embajadora de EE. UU. en Londres cuando esperaba otro destino. Rufus Sewell hace de su marido, también diplomático. Sigue en emisión: comprobar en qué temporada está antes de grabar. Gancho: thriller político con humor y diálogos rápidos."},
+    {n:93, t:"Station Eleven", y:"2021-2022", ch:"Patrick Somerville · HBO Max · miniserie, 10 ep.", b:"Basada en la novela de Emily St. John Mandel (2014). Una pandemia acaba con casi toda la humanidad y, veinte años después, una compañía de teatro itinerante recorre lo que queda representando Shakespeare. Con Mackenzie Davis e Himesh Patel. Gancho: se estrenó en plena covid y parecía muy mala idea verla."},
+    {n:92, t:"The Night Of", y:"2016", ch:"Price y Zaillian · HBO · miniserie, 8 ep.", b:"Adaptación de la británica Criminal Justice. Un estudiante de origen paquistaní (Riz Ahmed) se despierta junto a una chica muerta y acaba acusado de asesinato. John Turturro es su abogado, con un eccema que nunca se va; heredó el papel de James Gandolfini, que murió antes de rodar. Gancho: un juicio que va del proceso al sistema penitenciario."},
+    {n:91, t:"Catastrophe", y:"2015-2019", ch:"Delaney y Horgan · Channel 4/Amazon · 4 temp., 24 ep.", b:"Un estadounidense y una irlandesa se acuestan una semana en Londres, ella se queda embarazada y deciden casarse. Comedia de matrimonio seca y bastante cruel. Gancho: pocas comedias muestran una pareja que se lleva bien y sigue siendo graciosa."},
+    {n:90, t:"Eastbound & Down", y:"2009-2013", ch:"McBride, Hill y Best · HBO · 4 temp.", b:"Kenny Powers, un exlanzador de las Grandes Ligas que vuelve a su pueblo de Carolina del Norte de profesor de gimnasia y no aprende nada de nada. McBride hace un personaje insoportable y aun así querible. Gancho: la escuela para entender el humor de McBride (Vice Principals, The Righteous Gemstones)."},
+    {n:89, t:"Baby Reindeer", y:"2024", ch:"Richard Gadd · Netflix · miniserie, 7 ep.", b:"Basada en su monólogo teatral. Un cómico fracasado (Gadd) es acosado durante meses por una mujer (Jessica Gunning) a la que invitó a una taza de té; cuenta también una agresión sexual. Ganó el Emmy a mejor miniserie. La mujer real en la que se inspiró fue identificada por internet y demandó a Netflix. Gancho: viral, escándalo judicial y siete episodios."},
+    {n:88, t:"Dexter", y:"2006-2013", ch:"James Manos Jr. (novelas de Jeff Lindsay) · Showtime · 8 temp., 96 ep.", b:"Michael C. Hall es un forense de la policía de Miami que de noche mata a otros asesinos. El final es de los más criticados de la historia; después llegaron New Blood (2021) y Resurrection (2025). Gancho: cuatro temporadas de serie buena, luego el descenso hasta un final que casi nadie defiende."},
+    {n:87, t:"Reservation Dogs", y:"2021-2023", ch:"Harjo y Waititi · FX en Hulu · 3 temp., 28 ep.", b:"Cuatro adolescentes indígenas de una reserva rural de Oklahoma que sueñan con largarse a California. Reparto y equipo de guion indígenas. Gancho: acabó bien, en el momento justo y sin alargarse."},
+    {n:86, t:"Shōgun", y:"2024-act.", ch:"Kondo y Marks (novela de James Clavell) · FX en Hulu · 10 ep.", b:"Japón, año 1600: un marinero inglés naufraga y se ve enredado en la lucha de poder entre señores. Hiroyuki Sanada, Cosmo Jarvis, Anna Sawai. Ganó 18 Emmys en 2024, récord para una sola temporada; la segunda estaba anunciada, comprobar estado. Gancho: hablada casi entera en japonés, con subtítulos, en una cadena estadounidense."},
+    {n:85, t:"The Great British Baking Show", y:"2010-act.", ch:"BBC Two/One, luego Channel 4", b:"En Reino Unido se llama Bake Off. Cambió de cadena en 2017, con nuevos presentadores y sin Mary Berry (se quedó Paul Hollywood). Concursantes aficionados, una carpa en un jardín, tartas. Gancho: reality de competición sin gente mala, y encaja con un programa que va de juegos."},
+    {n:84, t:"Planet Earth", y:"2006", ch:"BBC, Alastair Fothergill; narra David Attenborough · 11 ep.", b:"Rodada en alta definición durante varios años, con imágenes que todavía se citan (el leopardo de las nieves, las aves del paraíso). Después llegaron Planet Earth II (2016) y III (2023). Gancho: la única serie de la lista donde el guion lo escribe la naturaleza."},
+    {n:83, t:"Justified", y:"2010-2015", ch:"Graham Yost (Elmore Leonard) · FX · 6 temp., 78 ep.", b:"Timothy Olyphant es Raylan Givens, alguacil federal con sombrero de vaquero destinado en su Kentucky natal, donde se enfrenta a Boyd Crowder (Walton Goggins). Gancho: un western moderno con diálogos de Leonard que rara vez aparece en los top."},
+    {n:82, t:"Better Things", y:"2016-2022", ch:"Pamela Adlon · FX · 5 temp.", b:"Creada y dirigida por Adlon junto a Louis C.K., que se apartó tras las acusaciones de 2017. Sam Fox, actriz y madre soltera de tres hijas en Los Ángeles. Gancho: la serie que sobrevivió a la salida de su cocreador y se volvió más suya."},
+    {n:81, t:"The Queen's Gambit", y:"2020", ch:"Scott Frank y Allan Scott (novela de Walter Tevis) · Netflix · miniserie, 7 ep.", b:"Anya Taylor-Joy es Beth Harmon, huérfana prodigio del ajedrez en los años 50 y 60. Se habló mucho de que hizo subir las ventas de tableros de ajedrez de verdad. Gancho: la serie de ajedrez de la lista, y con público de juegos de mesa hay tema."},
+    {n:80, t:"How To with John Wilson", y:"2020-2023", ch:"John Wilson, con Nathan Fielder de productor · HBO · 3 temp.", b:"Wilson sale a la calle de Nueva York con una cámara para explicar cómo hacer algo cotidiano (cubrir muebles con plástico, mejorar la memoria) y acaba siempre en otra parte, más rara. Gancho: cuesta describirla, lo que la hace perfecta para un podcast."},
+    {n:79, t:"The Good Wife", y:"2009-2016", ch:"Robert y Michelle King · CBS · 7 temp., 156 ep.", b:"Julianna Margulies es Alicia Florrick, abogada que vuelve a trabajar tras el escándalo político de su marido (Chris Noth). Procedimental de juzgado que fue mejorando mucho con los años; tuvo derivado, The Good Fight. Gancho: un drama de cadena generalista, con episodios de 22 a 44 minutos, en un top de plataformas."},
+    {n:78, t:"It's Always Sunny in Philadelphia", y:"2005-act.", ch:"McElhenney, Howerton y Day · FX/FXX · +15 temp.", b:"Cinco amigos que regentan un bar de Filadelfia y son, sin excepción, personas horribles. Es la comedia de imagen real más larga de la historia de EE. UU. Gancho: la serie que nunca cambió el tono y se convirtió en institución."},
+    {n:77, t:"Modern Family", y:"2009-2020", ch:"Lloyd y Levitan · ABC · 11 temp., 250 ep.", b:"Tres familias emparentadas, rodada como falso documental. Ganó cinco Emmys seguidos a mejor comedia (2010-2014). Gancho: la serie que ganaba todo y que hoy casi nadie cita como favorita."},
+    {n:76, t:"Somebody Somewhere", y:"2022-2024", ch:"Hannah Bos y Paul Thureen · HBO · 3 temp.", b:"Bridget Everett es Sam, una mujer de cuarenta y tantos que vuelve a Manhattan, Kansas, tras la muerte de su hermana y encuentra un grupo de amigos raros y un coro. Terminó cuando quiso. Gancho: serie pequeña y muy bien tratada, y la que cierra la tanda."}
   ];
 
   var JUDGES = [
@@ -560,6 +607,7 @@
           '<span class="years">' + item.y + '</span>' +
         '</div>' +
       '</div>' +
+      '<div class="meta">' + item.ch + '</div>' +
       '<p class="blurb">' + item.b + '</p>' +
       '<div class="judges">' + judgesHtml + '</div>' +
       '<div class="card-actions">' +
