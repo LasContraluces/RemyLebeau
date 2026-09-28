@@ -61,6 +61,13 @@
     max-width:60ch;
   }
   .howto b{color:var(--accent);}
+  .mode-banner{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--accent-2);
+    margin:0 0 20px;
+  }
+  .mode-banner.local{color:var(--accent);}
 
   /* stats + progress */
   .stats{
@@ -423,6 +430,7 @@
   <h1>Cuenta atrás marciana</h1>
   <p class="subtitle">Tanda 1 de 4 — puestos 100 a 76 de "The 100 Best TV Shows of the 21st Century". Jurado: Xevi, Rulo y Remy.</p>
   <p class="howto">Por cada serie: marcad quién la ha <b>visto</b> y esa persona le pone una <b>nota del 0 al 5</b> — la vuestra, no la del NYT. La tabla de abajo se calcula sola con esas notas.</p>
+  <p class="mode-banner" id="modeBanner">Conectando…</p>
 
   <div class="stats">
     <div class="stat scored"><div class="num" id="statScored">0/25</div><div class="label">Con alguna nota</div></div>
@@ -472,9 +480,9 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="backupPanel" hidden>
     <h2>Copia de seguridad</h2>
-    <p class="hint">Todo se guarda solo en este navegador. Si grabáis desde otro ordenador, copiad el resumen aquí y pegadlo allí.</p>
+    <p class="hint">No hay voto compartido en esta vista, así que cada nota se guarda solo en este navegador. Si grabáis desde otro ordenador, copiad el resumen aquí y pegadlo allí.</p>
     <div class="panel-row">
       <button class="btn primary" id="btnCopy">Copiar resumen</button>
       <button class="btn" id="btnShowPaste">Pegar copia de seguridad</button>
@@ -484,10 +492,10 @@
     <div class="panel-row" id="pasteRow" hidden>
       <button class="btn primary" id="btnLoad">Cargar lo pegado</button>
     </div>
-    <div class="save-flag" id="saveFlag"></div>
   </div>
+  <div class="save-flag" id="saveFlag"></div>
 
-  <footer>Tanda 1 de 4 · Se guarda solo en este navegador, no hay servidor.</footer>
+  <footer>Tanda 1 de 4</footer>
 </div>
 
 <script>
@@ -528,6 +536,9 @@
 
   var STORE_KEY = "rm-nyt-tanda1-v2";
   var state = {votes:{}, notes:{}};
+  var dbMode = false;
+  var dbApi = null;
+  var writeQueue = {};
 
   function emptyVote(){
     var v = {};
@@ -537,7 +548,8 @@
 
   DATA.forEach(function(d){ state.votes[d.n] = emptyVote(); });
 
-  function loadState(){
+  // --- modo local (respaldo si no hay voto compartido) ---
+  function loadStateLocal(){
     try{
       var raw = localStorage.getItem(STORE_KEY);
       if(raw){
@@ -560,13 +572,66 @@
     }catch(e){ /* private mode or blocked storage: keep defaults */ }
   }
 
-  function saveState(){
+  function saveStateLocal(){
     try{
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
       flagSave("Guardado " + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}));
     }catch(e){
       flagSave("No se pudo guardar en este navegador");
     }
+  }
+
+  // --- modo compartido (base de datos del artifact) ---
+  function normalizeDoc(data){
+    var v = emptyVote();
+    JUDGES.forEach(function(j){
+      v[j.key].seen = !!data[j.key + '_seen'];
+      v[j.key].nota = Number(data[j.key + '_nota']) || 0;
+    });
+    return v;
+  }
+
+  function docBody(n){
+    var v = state.votes[n];
+    var body = {notes: state.notes[n] || ''};
+    JUDGES.forEach(function(j){
+      body[j.key + '_seen'] = !!v[j.key].seen;
+      body[j.key + '_nota'] = Number(v[j.key].nota) || 0;
+    });
+    return body;
+  }
+
+  function subscribeAll(){
+    DATA.forEach(function(item){
+      var ref = dbApi.doc('votes/' + item.n);
+      ref.onSnapshot(function(snap){
+        var data = snap.data();
+        if(data){
+          state.votes[item.n] = normalizeDoc(data);
+          state.notes[item.n] = data.notes || '';
+        }
+        refreshCard(item.n);
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+      }, function(err){
+        flagSave('Sin conexión al voto compartido (' + (err && err.code) + ')');
+      });
+    });
+  }
+
+  function commitVote(n){
+    if(!dbMode){ saveStateLocal(); return; }
+    var ref = dbApi.doc('votes/' + n);
+    var body = docBody(n);
+    var prev = writeQueue[n] || Promise.resolve();
+    writeQueue[n] = prev.then(function(){
+      return ref.set(body);
+    }).then(function(){
+      flagSave('Guardado y compartido ' + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}));
+    }).catch(function(err){
+      flagSave('No se pudo guardar: ' + (err && err.code ? err.code : 'error'));
+    });
   }
 
   var saveFlagEl = document.getElementById('saveFlag');
@@ -631,7 +696,7 @@
         refreshHeader();
         applyFilter();
         renderRanking();
-        saveState();
+        commitVote(item.n);
       });
 
       slider.addEventListener('input', function(){
@@ -642,12 +707,13 @@
         refreshHeader();
         applyFilter();
         renderRanking();
-        saveState();
+        commitVote(item.n);
       });
     });
 
     var noteBtn = card.querySelector('.note-btn');
     var noteArea = card.querySelector('.note');
+    var noteTimer;
     noteBtn.addEventListener('click', function(){
       var willShow = noteArea.hidden;
       noteArea.hidden = !willShow;
@@ -656,7 +722,8 @@
     });
     noteArea.addEventListener('input', function(){
       state.notes[item.n] = noteArea.value;
-      saveState();
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(function(){ commitVote(item.n); }, 800);
     });
   });
 
@@ -670,26 +737,25 @@
     valueEl.textContent = v.seen ? Number(v.nota).toFixed(1) : '–';
   }
 
-  function refreshAllCards(){
-    var cards = listEl.querySelectorAll('.card');
-    cards.forEach(function(card){
-      var n = card.dataset.n;
-      JUDGES.forEach(function(j){
-        var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
-        refreshJudgeBlock(judgeBlock, state.votes[n][j.key]);
-      });
-      var noteArea = card.querySelector('.note');
-      var noteBtn = card.querySelector('.note-btn');
-      var val = state.notes[n] || '';
-      noteArea.value = val;
-      if(val){
-        noteArea.hidden = false;
-        noteBtn.textContent = '– nota';
-      } else {
-        noteArea.hidden = true;
-        noteBtn.textContent = '+ nota';
-      }
+  function refreshCard(n){
+    var card = listEl.querySelector('.card[data-n="' + n + '"]');
+    if(!card) return;
+    JUDGES.forEach(function(j){
+      var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
+      refreshJudgeBlock(judgeBlock, state.votes[n][j.key]);
     });
+    var noteArea = card.querySelector('.note');
+    var noteBtn = card.querySelector('.note-btn');
+    var val = state.notes[n] || '';
+    if(document.activeElement !== noteArea){ noteArea.value = val; }
+    if(val && noteArea.hidden){
+      noteArea.hidden = false;
+      noteBtn.textContent = '– nota';
+    }
+  }
+
+  function refreshAllCards(){
+    DATA.forEach(function(d){ refreshCard(d.n); });
   }
 
   var statScored = document.getElementById('statScored');
@@ -815,7 +881,8 @@
     });
   }
 
-  // backup panel
+  // backup panel (solo se usa en modo local)
+  var backupPanel = document.getElementById('backupPanel');
   var ioBox = document.getElementById('ioBox');
   var pasteRow = document.getElementById('pasteRow');
   var btnCopy = document.getElementById('btnCopy');
@@ -872,7 +939,7 @@
       refreshHeader();
       applyFilter();
       renderRanking();
-      saveState();
+      saveStateLocal();
       flagSave('Copia cargada');
       pasteRow.hidden = true;
     }catch(e){
@@ -901,14 +968,38 @@
     refreshHeader();
     applyFilter();
     renderRanking();
-    saveState();
+    saveStateLocal();
     flagSave('Todo borrado');
   });
 
-  loadState();
-  refreshAllCards();
-  refreshHeader();
-  applyFilter();
-  renderRanking();
+  var modeBanner = document.getElementById('modeBanner');
+
+  function boot(){
+    var useClaudeDb = window.claude && typeof window.claude.use === 'function';
+    var dbPromise = useClaudeDb ? window.claude.use('db').catch(function(){ return null; }) : Promise.resolve(null);
+
+    dbPromise.then(function(api){
+      if(api){
+        dbApi = api;
+        dbMode = true;
+        modeBanner.textContent = 'Voto compartido en vivo — se guarda solo y lo ven Xevi, Rulo y Remy al momento.';
+        modeBanner.classList.remove('local');
+        backupPanel.hidden = true;
+        subscribeAll();
+      } else {
+        dbMode = false;
+        modeBanner.textContent = 'Modo local: sin conexión al voto compartido, cada nota se guarda solo en este navegador.';
+        modeBanner.classList.add('local');
+        backupPanel.hidden = false;
+        loadStateLocal();
+        refreshAllCards();
+      }
+      refreshHeader();
+      applyFilter();
+      renderRanking();
+    });
+  }
+
+  boot();
 })();
 </script>
