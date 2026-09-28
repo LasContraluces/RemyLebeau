@@ -1,0 +1,1005 @@
+<title>Cuenta Atrás Marciana II</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#FFFFFF;
+    --surface:#FFFFFF;
+    --surface-2:#F7F6F2;
+    --ink:#1B1B1F;
+    --muted:#6B6B72;
+    --accent:#D6412F;
+    --accent-ink:#FFFFFF;
+    --accent-2:#1F6F78;
+    --accent-2-ink:#FFFFFF;
+    --border:#DDDAD2;
+    --shadow:0 1px 2px rgba(27,27,31,.06), 0 6px 16px rgba(27,27,31,.06);
+    color-scheme: light;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding-inline:16px;
+    padding-block:28px 60px;
+    line-height:1.5;
+  }
+  .wrap{max-width:720px; margin:0 auto;}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,7vw,40px);
+    margin:6px 0 4px;
+    text-wrap:balance;
+    letter-spacing:-.01em;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:14.5px;
+    margin:0 0 6px;
+    max-width:58ch;
+  }
+  .howto{
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 13px;
+    font-size:13px;
+    margin:14px 0 20px;
+    max-width:60ch;
+  }
+  .howto b{color:var(--accent);}
+  .mode-banner{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--accent-2);
+    margin:0 0 20px;
+  }
+  .mode-banner.local{color:var(--accent);}
+
+  /* stats + progress */
+  .stats{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .stat{
+    flex:1 1 140px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    box-shadow:var(--shadow);
+  }
+  .stat .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:22px;
+    font-weight:600;
+  }
+  .stat .label{
+    font-size:11.5px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .stat.scored .num{color:var(--accent);}
+  .stat.allseen .num{color:var(--accent-2);}
+
+  .progress-track{
+    height:6px;
+    background:var(--border);
+    border-radius:99px;
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:99px;
+    width:0%;
+    transition:width .35s ease;
+  }
+
+  /* filters */
+  .filters{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .filter-btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:7px 13px;
+    border-radius:99px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .filter-btn:hover{background:var(--surface-2);}
+  .filter-btn.active{
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+  .filter-btn:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+
+  /* cards */
+  .list{display:flex; flex-direction:column; gap:10px; margin-bottom:32px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px 16px 14px;
+    box-shadow:var(--shadow);
+  }
+  .card.dimmed{display:none;}
+  .card-top{
+    display:flex;
+    gap:12px;
+    align-items:baseline;
+  }
+  .rank{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:26px;
+    font-weight:600;
+    color:var(--muted);
+    min-width:2.4ch;
+  }
+  .titleblock{flex:1; min-width:0;}
+  .titleblock h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:17.5px;
+    margin:0;
+    line-height:1.25;
+  }
+  .years{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--accent-2);
+    margin:6px 0 0;
+  }
+  .blurb{
+    font-size:13.5px;
+    color:var(--muted);
+    margin:6px 0 14px;
+    max-width:64ch;
+  }
+
+  /* summary panel */
+  .summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:6px;
+  }
+  @media (max-width:480px){
+    .summary-grid{grid-template-columns:1fr 1fr;}
+  }
+  .summary-tile .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:20px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .summary-tile .label{
+    font-size:11.5px;
+    color:var(--muted);
+  }
+  .summary-note{
+    font-size:13px;
+    color:var(--muted);
+    margin:12px 0 0;
+    max-width:60ch;
+  }
+
+  .judges{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:10px;
+  }
+  @media (max-width:480px){
+    .judges{grid-template-columns:1fr;}
+  }
+  .judge{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:9px 10px;
+  }
+  .judge-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:7px;
+  }
+  .judge-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .seen-toggle{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:11.5px;
+    font-weight:500;
+    padding:3px 9px;
+    border-radius:99px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .seen-toggle.on{
+    background:var(--accent-2);
+    color:var(--accent-2-ink);
+    border-color:var(--accent-2);
+  }
+  .slider-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nota-slider{
+    flex:1;
+    accent-color:var(--accent);
+    cursor:pointer;
+  }
+  .nota-slider:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+  }
+  .nota-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:13px;
+    font-weight:600;
+    min-width:2.2ch;
+    text-align:right;
+    color:var(--ink);
+  }
+
+  .card-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .note-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:4px 0;
+  }
+  .note-btn:hover{color:var(--ink);}
+  textarea.note{
+    width:100%;
+    margin-top:10px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    resize:vertical;
+    min-height:56px;
+  }
+  textarea.note[hidden]{display:none;}
+
+  /* ranking table */
+  .table-wrap{overflow-x:auto;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    min-width:520px;
+  }
+  th, td{
+    text-align:left;
+    padding:8px 10px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  th{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+  }
+  th:hover{color:var(--ink);}
+  th.sorted{color:var(--accent);}
+  td.num, th.num{
+    font-family:'IBM Plex Mono', monospace;
+    font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  td.title-cell{
+    font-weight:500;
+    white-space:normal;
+  }
+  tbody tr:nth-child(odd){background:var(--surface-2);}
+  tbody tr.empty td{color:var(--muted); font-style:italic; text-align:center;}
+
+  /* backup panel */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+  }
+  .panel h2{
+    font-family:'Fraunces', serif;
+    font-size:16px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .panel p.hint{
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 14px;
+  }
+  .panel-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .btn:hover{background:var(--border);}
+  .btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+  .btn.danger{color:var(--accent); border-color:var(--accent);}
+  .panel textarea.io{
+    width:100%;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    min-height:70px;
+    resize:vertical;
+  }
+  .save-flag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:6px;
+    min-height:14px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:11.5px;
+    margin-top:26px;
+  }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">La Red Marciana · Repaso NYT</div>
+  <h1>Cuenta atrás marciana II</h1>
+  <p class="subtitle">Tanda 2 de 4 — puestos 75 a 51 de "The 100 Best TV Shows of the 21st Century". Jurado: Xevi, Rulo y Remy.</p>
+  <p class="howto">Por cada serie: marcad quién la ha <b>visto</b> y esa persona le pone una <b>nota del 0 al 5</b> — la vuestra, no la del NYT. La tabla de abajo se calcula sola con esas notas.</p>
+  <p class="mode-banner" id="modeBanner">Conectando…</p>
+
+  <div class="stats">
+    <div class="stat scored"><div class="num" id="statScored">0/25</div><div class="label">Con alguna nota</div></div>
+    <div class="stat allseen"><div class="num" id="statAllSeen">0/25</div><div class="label">Vista por los 3</div></div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Todas (25)</button>
+    <button class="filter-btn" data-filter="scored">Con nota</button>
+    <button class="filter-btn" data-filter="pending">Nadie la ha visto</button>
+  </div>
+
+  <div class="panel">
+    <h2>Resumen de la tanda</h2>
+    <div class="summary-grid">
+      <div class="summary-tile"><div class="num">2002–2025</div><div class="label">Años de estreno</div></div>
+      <div class="summary-tile"><div class="num">Netflix / HBO</div><div class="label">Cadenas más repetidas (4 y 4)</div></div>
+      <div class="summary-tile"><div class="num">2</div><div class="label">Miniseries</div></div>
+      <div class="summary-tile"><div class="num">5</div><div class="label">Aún en emisión</div></div>
+      <div class="summary-tile"><div class="num">4</div><div class="label">De HBO</div></div>
+      <div class="summary-tile"><div class="num">4</div><div class="label">De Netflix</div></div>
+    </div>
+    <p class="summary-note">Empate entre Netflix (Ozark, Stranger Things, Beef, Squid Game) y HBO (Insecure, Mare of Easttown, Barry, The Rehearsal) como casas más presentes. En emisión o con temporada pendiente: The Bear, The Rehearsal, Slow Horses, RuPaul's Drag Race e I Think You Should Leave — comprobad su estado antes de grabar. Miniseries de la tanda: Beef y Mare of Easttown. Hay dos programas de no ficción (los dos de Anthony Bourdain) y un formato de sketches (Chappelle's Show, I Think You Should Leave).</p>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <div class="panel">
+    <h2>Tabla final</h2>
+    <p class="hint">Se calcula sola. Toca una columna para ordenar.</p>
+    <div class="table-wrap">
+      <table id="rankTable">
+        <thead>
+          <tr>
+            <th class="num" data-key="rank">#</th>
+            <th data-key="title">Serie</th>
+            <th class="num" data-key="seen">Vistas</th>
+            <th class="num" data-key="xevi">Xevi</th>
+            <th class="num" data-key="rulo">Rulo</th>
+            <th class="num" data-key="remy">Remy</th>
+            <th class="num" data-key="media">Media</th>
+          </tr>
+        </thead>
+        <tbody id="rankBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" id="backupPanel" hidden>
+    <h2>Copia de seguridad</h2>
+    <p class="hint">No hay voto compartido en esta vista, así que cada nota se guarda solo en este navegador. Si grabáis desde otro ordenador, copiad el resumen aquí y pegadlo allí.</p>
+    <div class="panel-row">
+      <button class="btn primary" id="btnCopy">Copiar resumen</button>
+      <button class="btn" id="btnShowPaste">Pegar copia de seguridad</button>
+      <button class="btn danger" id="btnClear">Borrar todo</button>
+    </div>
+    <textarea class="io" id="ioBox" hidden></textarea>
+    <div class="panel-row" id="pasteRow" hidden>
+      <button class="btn primary" id="btnLoad">Cargar lo pegado</button>
+    </div>
+  </div>
+  <div class="save-flag" id="saveFlag"></div>
+
+  <footer>Tanda 2 de 4</footer>
+</div>
+
+<script>
+(function(){
+  var DATA = [
+    {n:75, t:"Ted Lasso", y:"2020-2023", ch:"Sudeikis, Hunt, Kelly y Lawrence · Apple TV+ · 3 temp., 34 ep.", b:"Jason Sudeikis es un entrenador de fútbol americano universitario contratado, sin ninguna experiencia, para dirigir un club de fútbol inglés. Fue de las series que definieron el catálogo de Apple TV+ en sus primeros años, muy citada durante la pandemia por su optimismo. Gancho: la serie \"buenrollista\" que arrasó en Emmys y que hoy genera opiniones bastante divididas sobre si envejeció bien."},
+    {n:74, t:"The Bear", y:"2022-act.", ch:"Christopher Storer · FX en Hulu · 4 temp.", b:"Jeremy Allen White es un chef de alta cocina que vuelve a Chicago para hacerse cargo del bareto de sandwiches de su hermano, muerto por suicidio. Rodada con mucho ruido y cámara encima, tensión constante de cocina real. Sigue en emisión: comprobar temporada antes de grabar. Gancho: la serie de cocina que no va de cocina, va de duelo y de familias que no se hablan bien."},
+    {n:73, t:"Barry", y:"2018-2023", ch:"Bill Hader y Alec Berg · HBO · 4 temp., 32 ep.", b:"Bill Hader es un sicario de poca monta que llega a Los Ángeles para un encargo, se apunta a una clase de interpretación y decide que quiere ser actor. Empieza como comedia y cada temporada se vuelve más oscura, hasta un final muy discutido. Gancho: de la serie más divertida de su año a una de las más sombrías, sin avisar."},
+    {n:72, t:"Squid Game", y:"2021-2025", ch:"Hwang Dong-hyuk · Netflix · 3 temp.", b:"456 personas endeudadas compiten en versiones mortales de juegos infantiles coreanos por un premio multimillonario. Se convirtió en el estreno más visto de la historia de Netflix y en fenómeno cultural mundial, con disfraces de Halloween y todo. Terminó con una tercera temporada en 2025. Gancho: la serie coreana que rompió la barrera del subtitulado para el público general."},
+    {n:71, t:"Beef", y:"2023", ch:"Lee Sung Jin · Netflix · miniserie, 10 ep.", b:"Steven Yeun y Ali Wong protagonizan una pelea de tráfico que se convierte en una guerra personal cada vez más destructiva entre dos desconocidos. Ganó varios Emmys, incluido el de miniserie. Gancho: una serie que empieza como comedia de rabia por un aparcamiento y acaba siendo sobre la insatisfacción vital de dos personas que se parecen más de lo que creen."},
+    {n:70, t:"The Shield", y:"2002-2008", ch:"Shawn Ryan · FX · 7 temp., 88 ep.", b:"Michael Chiklis es Vic Mackey, líder de una unidad antidisturbios de Los Ángeles tan corrupta como violenta. Se la considera una de las series que abrieron el camino al drama de cable adulto, antes incluso de Los Soprano en algunos aspectos de brutalidad policial. Gancho: de las primeras series con protagonista claramente villano, y hoy bastante menos citada que sus herederas."},
+    {n:69, t:"Anthony Bourdain: No Reservations", y:"2005-2012", ch:"Travel Channel · 9 temp.", b:"Bourdain viaja por el mundo comiendo lo que le ponen delante y hablando de política, historia y clase social por el camino, más que de gastronomía en sentido estricto. Su programa anterior a Parts Unknown, el que lo convirtió en figura de la tele. Gancho: dos programas de Bourdain en la misma tanda da para hablar de por qué se le echa tanto de menos."},
+    {n:68, t:"Ozark", y:"2017-2022", ch:"Bill Dubuque y Mark Williams · Netflix · 4 temp., 44 ep.", b:"Jason Bateman es un asesor financiero de Chicago que se lleva a su familia a los Ozarks de Missouri para blanquear dinero de un cártel mexicano y salvar el pellejo. Laura Linney como su mujer acaba siendo el personaje más interesante. Gancho: la serie \"de cártel con familia normal\" que muchos comparan, para bien o para mal, con Breaking Bad."},
+    {n:67, t:"The Handmaid's Tale", y:"2017-2025", ch:"Bruce Miller (novela de Margaret Atwood) · Hulu · 6 temp.", b:"Elisabeth Moss es June, una de las \"criadas\" obligadas a procrear para las familias de la élite en Gilead, una teocracia que sustituyó a EE. UU. Empezó con mucho impacto por su cercanía a la actualidad política de 2017 y fue alargándose temporada tras temporada más allá de la novela original. Terminó en 2025. Gancho: la serie que se volvió símbolo de protesta (las capas rojas) fuera de la pantalla."},
+    {n:66, t:"The Rehearsal", y:"2022-act.", ch:"Nathan Fielder · HBO", b:"Fielder ofrece a gente corriente la posibilidad de ensayar momentos difíciles de su vida con actores y decorados construidos a su medida; la segunda temporada (2025) gira sobre errores de comunicación en cabinas de avión. Cada vez más difícil saber qué parte es real. Sigue en emisión: comprobar temporada antes de grabar. Gancho: la serie más incómoda de ver de toda la lista, en el buen sentido."},
+    {n:65, t:"Mare of Easttown", y:"2021", ch:"Brad Ingelsby · HBO · miniserie, 7 ep.", b:"Kate Winslet es una detective de un pueblo de Pensilvania que investiga un asesinato mientras arrastra su propia vida hecha pedazos. Muy anclada en el acento y el paisaje de la zona, con un reparto que incluye a Jean Smart y Evan Peters. Gancho: la miniserie de crimen de pueblo pequeño que todo el mundo comentaba episodio a episodio en 2021."},
+    {n:64, t:"Anthony Bourdain: Parts Unknown", y:"2013-2018", ch:"CNN · 12 temp.", b:"La continuación de No Reservations, ya en CNN, con producción más cuidada y un tono más introspectivo. Bourdain se suicidó en 2018 durante el rodaje de la última temporada, que se emitió después. Gancho: el programa que estaba grabando cuando murió, y la pregunta de qué queda de un autor cuando su obra sigue publicándose sin él."},
+    {n:63, t:"The Thick of It", y:"2005-2012", ch:"Armando Iannucci · BBC · 4 temp.", b:"Sátira sobre un ministerio británico ficticio, con Peter Capaldi como el temible jefe de comunicación Malcolm Tucker, insultando a todo el que se le ponga por delante. Iannucci la usó como base para la película In the Loop y luego para Veep en EE. UU. Gancho: el origen de la escuela Iannucci de comedia política, con más mala leche que su versión americana."},
+    {n:62, t:"Slow Horses", y:"2022-act.", ch:"Will Smith (guionista) · Apple TV+ · novelas de Mick Herron", b:"Gary Oldman es Jackson Lamb, jefe de un departamento del MI5 para espías caídos en desgracia, en unas oficinas cochambrosas llamadas Slough House. Temporadas cortas y muy bien recibidas, con banda sonora de Mick Jagger. Sigue en emisión: comprobar temporada antes de grabar. Gancho: el thriller de espías que se ríe de sí mismo sin dejar de tomarse en serio la trama."},
+    {n:61, t:"RuPaul's Drag Race", y:"2009-act.", ch:"World of Wonder · Logo/VH1/MTV", b:"Concurso de drag queens presentado por RuPaul, con retos de diseño, interpretación y la sentencia final \"sashay away\". Pasó de programa de nicho en un canal pequeño a fenómeno con versiones en más de una decena de países. Sigue en emisión: comprobar temporada antes de grabar. Gancho: el reality de la lista, y el que más ha cambiado la cultura pop fuera de la pantalla."},
+    {n:60, t:"Peep Show", y:"2003-2015", ch:"Sam Bain y Jesse Armstrong · Channel 4 · 9 temp.", b:"Comedia británica rodada casi entera en primera persona, con David Mitchell y Robert Webb como dos compañeros de piso patéticos, y sus pensamientos internos en voz en off. Armstrong luego crearía Succession. Gancho: para quien quiera rastrear de dónde viene el humor incómodo de Succession, esto es el origen."},
+    {n:59, t:"PEN15", y:"2019-2021", ch:"Erskine, Konkle y Sam Zvibleman · Hulu", b:"Maya Erskine y Anna Konkle, ya adultas, interpretan a dos amigas de 13 años en el año 2000, rodeadas de un reparto de auténticos adolescentes. La broma funciona porque ellas actúan la edad sin disfrazarse de niñas. Gancho: la serie sobre el instituto contada por dos mujeres que no se hicieron pasar por más jóvenes de lo que son, sino que sencillamente actuaron como si lo fueran."},
+    {n:58, t:"Chappelle's Show", y:"2003-2006", ch:"Dave Chappelle y Neal Brennan · Comedy Central · 3 temp.", b:"Programa de sketches con Dave Chappelle como cara visible, entre los más citados y parodiados de la comedia estadounidense de los 2000. Chappelle abandonó la producción de la tercera temporada a mitad de camino, harto de la presión del éxito, y el resto se montó con material sobrante. Gancho: un éxito tan grande que su propio creador se fue de la cadena en pleno rodaje."},
+    {n:57, t:"I Think You Should Leave with Tim Robinson", y:"2019-act.", ch:"Tim Robinson y Zach Kanin · Netflix", b:"Sketches cortos de humor absurdo que giran, casi siempre, en torno a alguien negándose a admitir que ha hecho algo mal. Se volvió meme constante desde el primer episodio (\"we're all trying to find the guy who did this\"). Sigue en emisión: comprobar temporada antes de grabar. Gancho: el programa de sketches de la era de los memes, hecho casi a propósito para fragmentarse en clips."},
+    {n:56, t:"Nathan for You", y:"2013-2017", ch:"Nathan Fielder · Comedy Central · 4 temp.", b:"Fielder, con formación en negocios, ofrece a pequeños comercios reales ideas de marketing absurdas y las lleva hasta el final con total seriedad. El germen de todo lo que luego haría en The Rehearsal. Gancho: quien vea El Ensayo puede empezar aquí para entender de dónde sale el método Fielder."},
+    {n:55, t:"Insecure", y:"2016-2021", ch:"Issa Rae y Larry Wilmore · HBO · 5 temp., 44 ep.", b:"Issa Rae interpreta una versión de sí misma, una treintañera negra de Los Ángeles que se raps a sí misma delante del espejo mientras intenta resolver su vida laboral y sentimental. Basada en su webserie Awkward Black Girl. Gancho: HBO fichando talento salido de YouTube, antes de que eso fuera lo normal."},
+    {n:54, t:"The Bureau (Le Bureau des Légendes)", y:"2015-2020", ch:"Éric Rochant · Canal+ · 5 temp.", b:"Serie francesa sobre agentes del servicio de inteligencia exterior que viven bajo identidad falsa durante años, con asesoramiento de exespías reales para que el procedimiento fuera creíble. Poco conocida fuera de Francia pese al respeto de la crítica. Gancho: la sorpresa de la tanda, para quien no la conozca todavía."},
+    {n:53, t:"Stranger Things", y:"2016-2025", ch:"Hermanos Duffer · Netflix · 5 temp.", b:"Un grupo de niños de un pueblo de Indiana en los años 80 se enfrenta a criaturas de otra dimensión, con mucha cita a Spielberg, Stephen King y el cine de aquella década. Uno de los mayores éxitos globales de Netflix, terminó con su quinta temporada en 2025. Gancho: la serie que hizo que Netflix se tomara en serio el merchandising y los eventos en directo."},
+    {n:52, t:"Downton Abbey", y:"2010-2015", ch:"Julian Fellowes · ITV/PBS (Masterpiece) · 6 temp., 52 ep.", b:"La familia Crawley y su servicio en una mansión inglesa entre 1912 y los años 20, con Maggie Smith como la condesa viuda soltando frases lapidarias. Éxito enorme en EE. UU. a través de PBS, con dos películas después de terminar la serie. Gancho: el drama de época de la lista, con público muy fiel y bastante distinto al del resto de la tanda."},
+    {n:51, t:"The Good Place", y:"2016-2020", ch:"Michael Schur · NBC · 4 temp., 53 ep.", b:"Kristen Bell despierta en un paraíso burocrático tras morir, convencida de que hay un error porque en vida no fue precisamente buena persona. Con Ted Danson y giros de guion que reinventan la premisa cada temporada, además de servir de introducción popular a la filosofía moral. Gancho: la sitcom de cadena generalista con más ambición filosófica de los últimos años."}
+  ];
+
+  var JUDGES = [
+    {key:'xevi', label:'Xevi'},
+    {key:'rulo', label:'Rulo'},
+    {key:'remy', label:'Remy'}
+  ];
+
+  var STORE_KEY = "rm-nyt-tanda2-v2";
+  var state = {votes:{}, notes:{}};
+  var dbMode = false;
+  var dbApi = null;
+  var writeQueue = {};
+
+  function emptyVote(){
+    var v = {};
+    JUDGES.forEach(function(j){ v[j.key] = {seen:false, nota:0}; });
+    return v;
+  }
+
+  DATA.forEach(function(d){ state.votes[d.n] = emptyVote(); });
+
+  // --- modo local (respaldo si no hay voto compartido) ---
+  function loadStateLocal(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.votes){
+          DATA.forEach(function(d){
+            var saved = parsed.votes[d.n];
+            if(saved){
+              JUDGES.forEach(function(j){
+                if(saved[j.key]){
+                  state.votes[d.n][j.key].seen = !!saved[j.key].seen;
+                  state.votes[d.n][j.key].nota = Number(saved[j.key].nota) || 0;
+                }
+              });
+            }
+          });
+          state.notes = parsed.notes || {};
+        }
+      }
+    }catch(e){ /* private mode or blocked storage: keep defaults */ }
+  }
+
+  function saveStateLocal(){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      flagSave("Guardado " + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}));
+    }catch(e){
+      flagSave("No se pudo guardar en este navegador");
+    }
+  }
+
+  // --- modo compartido (base de datos del artifact) ---
+  function normalizeDoc(data){
+    var v = emptyVote();
+    JUDGES.forEach(function(j){
+      v[j.key].seen = !!data[j.key + '_seen'];
+      v[j.key].nota = Number(data[j.key + '_nota']) || 0;
+    });
+    return v;
+  }
+
+  function docBody(n){
+    var v = state.votes[n];
+    var body = {notes: state.notes[n] || ''};
+    JUDGES.forEach(function(j){
+      body[j.key + '_seen'] = !!v[j.key].seen;
+      body[j.key + '_nota'] = Number(v[j.key].nota) || 0;
+    });
+    return body;
+  }
+
+  function subscribeAll(){
+    DATA.forEach(function(item){
+      var ref = dbApi.doc('votes/' + item.n);
+      ref.onSnapshot(function(snap){
+        var data = snap.data();
+        if(data){
+          state.votes[item.n] = normalizeDoc(data);
+          state.notes[item.n] = data.notes || '';
+        }
+        refreshCard(item.n);
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+      }, function(err){
+        flagSave('Sin conexión al voto compartido (' + (err && err.code) + ')');
+      });
+    });
+  }
+
+  function commitVote(n){
+    if(!dbMode){ saveStateLocal(); return; }
+    var ref = dbApi.doc('votes/' + n);
+    var body = docBody(n);
+    var prev = writeQueue[n] || Promise.resolve();
+    writeQueue[n] = prev.then(function(){
+      return ref.set(body);
+    }).then(function(){
+      flagSave('Guardado y compartido ' + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}));
+    }).catch(function(err){
+      flagSave('No se pudo guardar: ' + (err && err.code ? err.code : 'error'));
+    });
+  }
+
+  var saveFlagEl = document.getElementById('saveFlag');
+  var saveFlagTimer;
+  function flagSave(msg){
+    saveFlagEl.textContent = msg;
+    clearTimeout(saveFlagTimer);
+    saveFlagTimer = setTimeout(function(){ saveFlagEl.textContent = ""; }, 2200);
+  }
+
+  var listEl = document.getElementById('list');
+
+  DATA.forEach(function(item){
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.n = item.n;
+
+    var judgesHtml = JUDGES.map(function(j){
+      return (
+        '<div class="judge" data-judge="' + j.key + '">' +
+          '<div class="judge-head">' +
+            '<span class="judge-name">' + j.label + '</span>' +
+            '<button class="seen-toggle" type="button">Vista</button>' +
+          '</div>' +
+          '<div class="slider-row">' +
+            '<input type="range" class="nota-slider" min="0" max="5" step="0.5" value="0" disabled>' +
+            '<span class="nota-value">–</span>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<div class="rank">' + item.n + '</div>' +
+        '<div class="titleblock">' +
+          '<h3>' + item.t + '</h3>' +
+          '<span class="years">' + item.y + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="meta">' + item.ch + '</div>' +
+      '<p class="blurb">' + item.b + '</p>' +
+      '<div class="judges">' + judgesHtml + '</div>' +
+      '<div class="card-actions">' +
+        '<button class="note-btn" type="button">+ nota</button>' +
+      '</div>' +
+      '<textarea class="note" placeholder="Nota para el programa…" hidden></textarea>';
+
+    listEl.appendChild(card);
+
+    JUDGES.forEach(function(j){
+      var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
+      var seenBtn = judgeBlock.querySelector('.seen-toggle');
+      var slider = judgeBlock.querySelector('.nota-slider');
+      var valueEl = judgeBlock.querySelector('.nota-value');
+
+      seenBtn.addEventListener('click', function(){
+        var v = state.votes[item.n][j.key];
+        v.seen = !v.seen;
+        if(!v.seen){ v.nota = 0; }
+        refreshJudgeBlock(judgeBlock, v);
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+        commitVote(item.n);
+      });
+
+      slider.addEventListener('input', function(){
+        state.votes[item.n][j.key].nota = Number(slider.value);
+        valueEl.textContent = Number(slider.value).toFixed(1);
+      });
+      slider.addEventListener('change', function(){
+        refreshHeader();
+        applyFilter();
+        renderRanking();
+        commitVote(item.n);
+      });
+    });
+
+    var noteBtn = card.querySelector('.note-btn');
+    var noteArea = card.querySelector('.note');
+    var noteTimer;
+    noteBtn.addEventListener('click', function(){
+      var willShow = noteArea.hidden;
+      noteArea.hidden = !willShow;
+      noteBtn.textContent = willShow ? '– nota' : '+ nota';
+      if(willShow) noteArea.focus();
+    });
+    noteArea.addEventListener('input', function(){
+      state.notes[item.n] = noteArea.value;
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(function(){ commitVote(item.n); }, 800);
+    });
+  });
+
+  function refreshJudgeBlock(judgeBlock, v){
+    var seenBtn = judgeBlock.querySelector('.seen-toggle');
+    var slider = judgeBlock.querySelector('.nota-slider');
+    var valueEl = judgeBlock.querySelector('.nota-value');
+    seenBtn.classList.toggle('on', v.seen);
+    slider.disabled = !v.seen;
+    slider.value = v.nota;
+    valueEl.textContent = v.seen ? Number(v.nota).toFixed(1) : '–';
+  }
+
+  function refreshCard(n){
+    var card = listEl.querySelector('.card[data-n="' + n + '"]');
+    if(!card) return;
+    JUDGES.forEach(function(j){
+      var judgeBlock = card.querySelector('.judge[data-judge="' + j.key + '"]');
+      refreshJudgeBlock(judgeBlock, state.votes[n][j.key]);
+    });
+    var noteArea = card.querySelector('.note');
+    var noteBtn = card.querySelector('.note-btn');
+    var val = state.notes[n] || '';
+    if(document.activeElement !== noteArea){ noteArea.value = val; }
+    if(val && noteArea.hidden){
+      noteArea.hidden = false;
+      noteBtn.textContent = '– nota';
+    }
+  }
+
+  function refreshAllCards(){
+    DATA.forEach(function(d){ refreshCard(d.n); });
+  }
+
+  var statScored = document.getElementById('statScored');
+  var statAllSeen = document.getElementById('statAllSeen');
+  var progressFill = document.getElementById('progressFill');
+
+  function itemStats(n){
+    var v = state.votes[n];
+    var seenCount = 0, notaSum = 0, notaCount = 0;
+    JUDGES.forEach(function(j){
+      if(v[j.key].seen){
+        seenCount++;
+        notaSum += v[j.key].nota;
+        notaCount++;
+      }
+    });
+    return {
+      seenCount: seenCount,
+      hasScore: notaCount > 0,
+      media: notaCount > 0 ? (notaSum / notaCount) : null
+    };
+  }
+
+  function refreshHeader(){
+    var total = DATA.length;
+    var scored = 0, allSeen = 0;
+    DATA.forEach(function(d){
+      var s = itemStats(d.n);
+      if(s.hasScore) scored++;
+      if(s.seenCount === JUDGES.length) allSeen++;
+    });
+    statScored.textContent = scored + '/' + total;
+    statAllSeen.textContent = allSeen + '/' + total;
+    progressFill.style.width = Math.round((scored/total)*100) + '%';
+  }
+
+  var currentFilter = 'all';
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  function applyFilter(){
+    var cards = listEl.querySelectorAll('.card');
+    cards.forEach(function(card){
+      var n = Number(card.dataset.n);
+      var s = itemStats(n);
+      var show = true;
+      if(currentFilter === 'scored') show = s.hasScore;
+      else if(currentFilter === 'pending') show = s.seenCount === 0;
+      card.classList.toggle('dimmed', !show);
+    });
+  }
+
+  // ranking table
+  var rankBody = document.getElementById('rankBody');
+  var sortKey = 'media';
+  var sortDir = -1; // desc
+  var headers = document.querySelectorAll('#rankTable th');
+  headers.forEach(function(th){
+    th.addEventListener('click', function(){
+      var key = th.dataset.key;
+      if(sortKey === key){ sortDir *= -1; }
+      else { sortKey = key; sortDir = (key === 'title') ? 1 : -1; }
+      renderRanking();
+    });
+  });
+
+  function renderRanking(){
+    var rows = DATA.map(function(d){
+      var v = state.votes[d.n];
+      var s = itemStats(d.n);
+      return {
+        n: d.n,
+        title: d.t,
+        seen: s.seenCount,
+        xevi: v.xevi.seen ? v.xevi.nota : null,
+        rulo: v.rulo.seen ? v.rulo.nota : null,
+        remy: v.remy.seen ? v.remy.nota : null,
+        media: s.media
+      };
+    });
+
+    rows.sort(function(a,b){
+      var av = a[sortKey], bv = b[sortKey];
+      if(sortKey === 'title'){
+        return sortDir * av.localeCompare(bv);
+      }
+      var an = (av === null || av === undefined) ? -1 : av;
+      var bn = (bv === null || bv === undefined) ? -1 : bv;
+      return sortDir * (an - bn);
+    });
+
+    headers.forEach(function(th){ th.classList.toggle('sorted', th.dataset.key === sortKey); });
+
+    rankBody.innerHTML = '';
+    var withScore = rows.filter(function(r){ return r.media !== null; });
+    if(withScore.length === 0){
+      var tr = document.createElement('tr');
+      tr.className = 'empty';
+      tr.innerHTML = '<td colspan="7">Aún no hay ninguna nota puesta.</td>';
+      rankBody.appendChild(tr);
+      return;
+    }
+
+    rows.forEach(function(r, i){
+      var tr = document.createElement('tr');
+      var fmt = function(v){ return v === null || v === undefined ? '—' : v.toFixed(1); };
+      tr.innerHTML =
+        '<td class="num">' + (i+1) + '</td>' +
+        '<td class="title-cell">' + r.title + '</td>' +
+        '<td class="num">' + r.seen + '/3</td>' +
+        '<td class="num">' + fmt(r.xevi) + '</td>' +
+        '<td class="num">' + fmt(r.rulo) + '</td>' +
+        '<td class="num">' + fmt(r.remy) + '</td>' +
+        '<td class="num">' + fmt(r.media) + '</td>';
+      rankBody.appendChild(tr);
+    });
+  }
+
+  // backup panel (solo se usa en modo local)
+  var backupPanel = document.getElementById('backupPanel');
+  var ioBox = document.getElementById('ioBox');
+  var pasteRow = document.getElementById('pasteRow');
+  var btnCopy = document.getElementById('btnCopy');
+  var btnShowPaste = document.getElementById('btnShowPaste');
+  var btnLoad = document.getElementById('btnLoad');
+  var btnClear = document.getElementById('btnClear');
+
+  btnCopy.addEventListener('click', function(){
+    var payload = JSON.stringify({tanda:2, rango:'75-51', state:state}, null, 0);
+    ioBox.hidden = false;
+    ioBox.value = payload;
+    pasteRow.hidden = true;
+    ioBox.focus();
+    ioBox.select();
+    var done = function(){ flagSave('Resumen copiado'); };
+    var fail = function(){
+      flagSave('No se pudo copiar solo: seleccionado, usa Ctrl/Cmd+C');
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(payload).then(done).catch(fail);
+    } else {
+      fail();
+    }
+  });
+
+  btnShowPaste.addEventListener('click', function(){
+    ioBox.hidden = false;
+    ioBox.value = '';
+    ioBox.placeholder = 'Pega aquí el resumen copiado en otro navegador…';
+    pasteRow.hidden = false;
+    ioBox.focus();
+  });
+
+  btnLoad.addEventListener('click', function(){
+    try{
+      var parsed = JSON.parse(ioBox.value);
+      var loaded = parsed && parsed.state ? parsed.state : parsed;
+      if(!loaded || typeof loaded !== 'object') throw new Error('formato');
+      DATA.forEach(function(d){
+        var saved = loaded.votes && loaded.votes[d.n];
+        var v = emptyVote();
+        if(saved){
+          JUDGES.forEach(function(j){
+            if(saved[j.key]){
+              v[j.key].seen = !!saved[j.key].seen;
+              v[j.key].nota = Number(saved[j.key].nota) || 0;
+            }
+          });
+        }
+        state.votes[d.n] = v;
+      });
+      state.notes = loaded.notes || {};
+      refreshAllCards();
+      refreshHeader();
+      applyFilter();
+      renderRanking();
+      saveStateLocal();
+      flagSave('Copia cargada');
+      pasteRow.hidden = true;
+    }catch(e){
+      flagSave('Ese texto no es una copia válida');
+    }
+  });
+
+  var clearArmed = false;
+  var clearTimer;
+  btnClear.addEventListener('click', function(){
+    if(!clearArmed){
+      clearArmed = true;
+      btnClear.textContent = 'Confirmar borrado';
+      clearTimer = setTimeout(function(){
+        clearArmed = false;
+        btnClear.textContent = 'Borrar todo';
+      }, 3000);
+      return;
+    }
+    clearTimeout(clearTimer);
+    clearArmed = false;
+    btnClear.textContent = 'Borrar todo';
+    DATA.forEach(function(d){ state.votes[d.n] = emptyVote(); });
+    state.notes = {};
+    refreshAllCards();
+    refreshHeader();
+    applyFilter();
+    renderRanking();
+    saveStateLocal();
+    flagSave('Todo borrado');
+  });
+
+  var modeBanner = document.getElementById('modeBanner');
+
+  function boot(){
+    var useClaudeDb = window.claude && typeof window.claude.use === 'function';
+    var dbPromise = useClaudeDb ? window.claude.use('db').catch(function(){ return null; }) : Promise.resolve(null);
+
+    dbPromise.then(function(api){
+      if(api){
+        dbApi = api;
+        dbMode = true;
+        modeBanner.textContent = 'Voto compartido en vivo — se guarda solo y lo ven Xevi, Rulo y Remy al momento.';
+        modeBanner.classList.remove('local');
+        backupPanel.hidden = true;
+        subscribeAll();
+      } else {
+        dbMode = false;
+        modeBanner.textContent = 'Modo local: sin conexión al voto compartido, cada nota se guarda solo en este navegador.';
+        modeBanner.classList.add('local');
+        backupPanel.hidden = false;
+        loadStateLocal();
+        refreshAllCards();
+      }
+      refreshHeader();
+      applyFilter();
+      renderRanking();
+    });
+  }
+
+  boot();
+})();
+</script>
