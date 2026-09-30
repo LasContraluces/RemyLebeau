@@ -179,6 +179,18 @@
     font-size:12px;
     color:var(--muted);
   }
+  .imdb{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:99px;
+    padding:1px 8px;
+    white-space:nowrap;
+  }
+  .imdb b{color:var(--accent);}
   .creator{
     font-family:'IBM Plex Sans', sans-serif;
     font-size:14.5px;
@@ -480,6 +492,7 @@
             <th class="num" data-key="rulo">Rulo</th>
             <th class="num" data-key="remy">Remy</th>
             <th class="num" data-key="media">Media</th>
+            <th class="num" data-key="imdb">IMDb</th>
           </tr>
         </thead>
         <tbody id="rankBody"></tbody>
@@ -676,7 +689,8 @@
         '<div class="rank">' + item.n + '</div>' +
         '<div class="titleblock">' +
           '<h3>' + item.t + '</h3>' +
-          '<span class="years">' + item.y + '</span>' +
+          '<span class="years">' + item.y + '</span> ' +
+          '<span class="imdb">IMDb <b>' + (typeof item.imdb === 'number' ? item.imdb.toFixed(1) : '—') + '</b></span>' +
         '</div>' +
       '</div>' +
       '<div class="creator">' + item.cr + '</div>' +
@@ -848,7 +862,8 @@
         xevi: v.xevi.seen ? v.xevi.nota : null,
         rulo: v.rulo.seen ? v.rulo.nota : null,
         remy: v.remy.seen ? v.remy.nota : null,
-        media: s.media
+        media: s.media,
+        imdb: d.imdb
       };
     });
 
@@ -869,7 +884,7 @@
     if(withScore.length === 0){
       var tr = document.createElement('tr');
       tr.className = 'empty';
-      tr.innerHTML = '<td colspan="7">Aún no hay ninguna nota puesta.</td>';
+      tr.innerHTML = '<td colspan="8">Aún no hay ninguna nota puesta.</td>';
       rankBody.appendChild(tr);
       return;
     }
@@ -884,7 +899,8 @@
         '<td class="num">' + fmt(r.xevi) + '</td>' +
         '<td class="num">' + fmt(r.rulo) + '</td>' +
         '<td class="num">' + fmt(r.remy) + '</td>' +
-        '<td class="num">' + fmt(r.media) + '</td>';
+        '<td class="num">' + fmt(r.media) + '</td>' +
+        '<td class="num">' + (typeof r.imdb === 'number' ? r.imdb.toFixed(1) : '—') + '</td>';
       rankBody.appendChild(tr);
     });
   }
